@@ -38,15 +38,15 @@ class HuaWei(BaseHuaWei):
         await self.page.type('input[name="userAccount"]', username, {'delay': 10})
         await asyncio.sleep(3)
         await self.page.type('.hwid-input-pwd', password, {'delay': 10})
-        await asyncio.sleep(2)
+        await asyncio.sleep(5)
         await self.page.click('.hwid-list-row-active')
         await self.page.type('.hwid-input-pwd', password, {'delay': 10})
         await asyncio.sleep(2)
         await self.page.click('.normalBtn')
         await asyncio.sleep(5)
-        self.logger.info(f'click button')
-        await self.page.click('.cancelBtn')
-        await asyncio.sleep(10)
+        self.logger.info(f'跳过升级')
+        await self.page.goto('https://devcloud.huaweicloud.com/bonususer/home/makebonus', {'waitUntil': 'load'})
+        await asyncio.sleep(5)
 
 
     async def iam_login(self, username, password, parent):
