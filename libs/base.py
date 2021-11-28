@@ -31,6 +31,7 @@ class BaseClient:
         self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36'
         self.width = 1440
         self.height = 900
+        self.serverIP = os.environ.get('SERVER_IP')
     
     @staticmethod
     def dingding_bot(content, title='HW'):
@@ -59,6 +60,7 @@ class BaseClient:
     def pushPlusSend(content, title):
         token = os.environ.get('PUSHPLUS_TOKEN')
         url = 'http://www.pushplus.plus/send'
+        print('开始使用 PUSHPLUS 推送消息...', end='')
         data = {
             "token":token,
             "title":title,
@@ -68,6 +70,10 @@ class BaseClient:
         body=json.dumps(data).encode(encoding='utf-8')
         headers = {'Content-Type':'application/json'}
         requests.post(url,data=body,headers=headers)
+        # if not response['errcode']:
+        #     print('推送成功！')
+        # else:
+        #     print('推送失败！')
 
     async def before_run(self):
         pass
