@@ -20,7 +20,6 @@ name_map = {
     '发布': [['upload_task', 0]],
     '流水线': [['week_new_pipeline', 0], ['pipeline_task', 1]],
     '接口测试': [['week_new_api_test_task', 0], ['api_test_task', 1]],
-    # '接口测试': [['api_test_task', 0]],
     '测试管理': [['new_test_task', 0], ['run_test_task', 1]],
     'APIG网关': [['new_new_api_task', 0], ['run_api_task', 1], ['debug_api_task', 2]],
     '函数工作流': [['new_fun_task', 0]],
@@ -29,6 +28,7 @@ name_map = {
     '使用Devstar生成代码工程': 'dev_star_task',
     '浏览Codelabs代码示例': 'view_code_task',
     '体验DevStar快速生成代码': 'fast_dev_star',
+    # '代码托管': [['week_new_git', 0]],
 }
 
 init_name_map = {
@@ -325,7 +325,7 @@ class BaseHuaWei(BaseClient):
     async def week_new_compile_build(self):
         await asyncio.sleep(2)
         await self.task_page.waitForSelector('.devui-layout-main-content', {'visible': True})
-        await self.task_page.click('.devui-layout-main-content #create_new_task')
+        await self.task_page.click('#create_new_task')
         await asyncio.sleep(5)
         await self.task_page.click('div.step-footer div.button-group button.devui-btn-stress')
         await asyncio.sleep(5)
@@ -671,8 +671,54 @@ class BaseHuaWei(BaseClient):
             await self.close()
             self.cancel = True
 
+    # async def delete_codehub(self):
+    #     await asyncio.sleep(3)
+    #     # element_crawler = await self.task_page.$("#deleteRepocrawler")
+    #     # element_phoenix_sample = await self.task_page.$("#deleteRepophoenix-sample")
+    #     while flag = await self.task_page.querySelector("#deleteRepocrawler"):
+    #         await self.task_page.click('#deleteRepocrawler')
+    #         await asyncio.sleep(1)
+    #         await self.task_page.type('#rname', 'crawler')
+    #         await asyncio.sleep(1)
+    #         await self.task_page.click('#deleteRepoSubmit')
+    #         self.logger.info("删除crawler")
+    #         await asyncio.sleep(1)
+
+    #     while flag = await self.task_page.querySelector("#deleteRepophoenix-sample"):
+    #         await self.task_page.click('#deleteRepophoenix-sample')
+    #         await asyncio.sleep(1)
+    #         await self.task_page.type('#rname', 'phoenix-sample')
+    #         await asyncio.sleep(1)
+    #         await self.task_page.click('#deleteRepoSubmit')
+    #         self.logger.info("删除phoenix-sample")
+    #         await asyncio.sleep(1)
+
+
     async def week_new_git(self):
         await asyncio.sleep(5)
+        # self.logger.info(self.task_page.url)
+        try: 
+            flag = await self.task_page.querySelector("div.new-list d-data-table table tbody tr:nth-child(6)")
+            i = 0
+            while flag != None and i <= 20:
+                await self.task_page.evaluate(
+                '''() =>{ document.querySelector('div.new-list d-data-table table tbody tr:nth-child(6) td:nth-child(6) ul li:nth-child(3) button').click() }''')
+                await asyncio.sleep(1)
+                title = await self.task_page.Jeval('#deleteRepoDialog d-modal-container ng-component p:nth-child(2) span', "el => el.getAttribute('title')")
+                await self.task_page.type('#rname', title)
+                await asyncio.sleep(1)
+                await self.task_page.evaluate(
+                '''() =>{ document.querySelector('#deleteRepoSubmit #deleteRepoSubmit').click() }''')
+                self.logger.info(str(i) + "删除:" + title)
+                await asyncio.sleep(2)
+                flag = await self.task_page.querySelector("div.new-list d-data-table table tbody tr:nth-child(6)")
+                i = i + 1
+        except Exception as e:
+            self.logger.warning(e)
+
+        await asyncio.sleep(3)
+        # await self.task_page.reload()
+        # await asyncio.sleep(6)
         no_data = await self.task_page.querySelector('.new-list .no-data')
         await self.task_page.waitForSelector('.pull-right', {'visible': True})
         await self.task_page.click('.toolbar-wrapper .devui-btn-primary')
